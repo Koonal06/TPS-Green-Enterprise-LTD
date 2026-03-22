@@ -373,7 +373,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                   <Facebook className="h-5 w-5" />
                 </a>
                 <a
-                  href="#"
+                  href="https://www.instagram.com/tpsgreen.enterprise_ltd?igsh=MWx5eHZlYXJnejE3NA%3D%3D"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   aria-label="Instagram"
                   className="rounded-full border border-gray-700 p-2 text-gray-400 transition hover:border-white hover:text-white"
                 >

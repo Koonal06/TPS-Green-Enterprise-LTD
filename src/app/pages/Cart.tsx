@@ -6,7 +6,7 @@ import { Card, CardContent } from '../components/ui/card';
 import { Plus, Minus, Trash2, ShoppingCart } from 'lucide-react';
 import { useCart } from '../contexts/CartContext';
 import { formatPrice } from '../lib/currency';
-import { ImageWithFallback } from '../components/figma/ImageWithFallback';
+import { ImageWithFallback } from '../components/Img/ImageWithFallback';
 import { hasCustomerSession } from '../lib/supabase';
 
 export default function Cart() {

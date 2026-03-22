@@ -8,7 +8,7 @@ import { ShoppingCart } from 'lucide-react';
 import { apiRequest, hasCustomerSession } from '../lib/supabase';
 import { formatPrice } from '../lib/currency';
 import { useCart } from '../contexts/CartContext';
-import { ImageWithFallback } from '../components/figma/ImageWithFallback';
+import { ImageWithFallback } from '../components/Img/ImageWithFallback';
 import { toast } from 'sonner';
 
 interface Product {

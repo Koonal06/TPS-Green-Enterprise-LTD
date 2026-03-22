@@ -12,7 +12,7 @@ import { Plus, Pencil, Trash2 } from 'lucide-react';
 import { apiRequest } from '../../lib/supabase';
 import { formatPrice } from '../../lib/currency';
 import { toast } from 'sonner';
-import { ImageWithFallback } from '../../components/figma/ImageWithFallback';
+import { ImageWithFallback } from '../../components/Img/ImageWithFallback';
 
 interface Product {
   id: string;

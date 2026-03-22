@@ -16,7 +16,7 @@ import {
   Users,
   ChevronRight,
 } from 'lucide-react';
-import { ImageWithFallback } from '../components/figma/ImageWithFallback';
+import { ImageWithFallback } from '../components/Img/ImageWithFallback';
 
 function CountUpNumber({
   end,
