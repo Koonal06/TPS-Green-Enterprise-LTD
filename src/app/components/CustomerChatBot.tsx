@@ -51,7 +51,7 @@ export default function CustomerChatBot() {
   };
 
   async function sendMessage(message: string, history: ChatMessage[]) {
-    const res = await fetch('http://192.168.100.63:11434/api/generate', {
+    const res = await fetch('/api/generate', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -63,7 +63,14 @@ export default function CustomerChatBot() {
       }),
     });
     if (!res.ok) {
-      throw new Error(`Chat request failed with status ${res.status}`);
+      let details = '';
+      try {
+        const errorData = await res.json();
+        details = errorData?.error || errorData?.details || '';
+      } catch {
+        details = '';
+      }
+      throw new Error(`Chat request failed with status ${res.status}${details ? `: ${details}` : ''}`);
     }
     const data = await res.json();
     return data.response as string;
@@ -97,9 +104,13 @@ export default function CustomerChatBot() {
     } catch (error) {
       console.error('Error sending chat message:', error);
       const errorMessage =
-        error instanceof Error && error.message.includes('Failed to fetch')
-          ? 'I could not reach the Ollama server. Make sure it is running and that CORS/network access is allowed from this site.'
-          : 'Something went wrong while contacting the AI server.';
+        error instanceof Error && error.message.includes('OLLAMA_API_URL is not configured')
+          ? 'The AI assistant is not configured yet. Add OLLAMA_API_URL in Vercel so /api/generate can reach your Ollama server.'
+          : error instanceof Error && error.message.includes('Unable to contact the configured Ollama server')
+            ? 'The website reached its AI endpoint, but that server could not connect to Ollama. Check that OLLAMA_API_URL points to a publicly reachable Ollama server.'
+            : error instanceof Error && error.message.includes('Failed to fetch')
+              ? 'I could not reach the website AI endpoint. Check the deployment and network settings.'
+              : 'Something went wrong while contacting the AI server.';
       setMessages(current => [
         ...current,
         {
