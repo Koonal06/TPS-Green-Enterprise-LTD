@@ -201,25 +201,17 @@ export default function Home() {
   };
 
   async function sendMessage(message: string, history: ChatMessage[]) {
-  const res = await fetch('https://tps-a42i7snp7-koonal06s-projects.vercel.app/api/generate', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      model: 'llama3.2:1b',
-      prompt: buildSitePrompt(history, message),
-      stream: false,
-    }),
-  });
-
-  if (!res.ok) {
-    throw new Error(`Error: ${res.status} ${res.statusText}`);
-  }
-
-  const data = await res.json();
-  return data;
-}
+    const res = await fetch('http://192.168.100.63:11434/api/generate', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: 'llama3.2:1b',
+        prompt: buildSitePrompt(history, message),
+        stream: false,
+      }),
+    });
 
     if (!res.ok) {
       throw new Error(`Chat request failed with status ${res.status}`);
