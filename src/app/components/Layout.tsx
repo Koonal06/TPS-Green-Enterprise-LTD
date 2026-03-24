@@ -275,10 +275,10 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               ) : (
                 <button
                   onClick={() => navigate('/login')}
-                  className="relative rounded-full border border-white/20 bg-white/10 p-3.5 text-white transition hover:bg-white/20"
-                  aria-label="Open login"
+                  className="rounded-full border border-white/20 bg-white/10 px-4 py-2 text-sm font-semibold text-white transition hover:bg-white/20"
+                  aria-label="Sign in or sign up"
                 >
-                  <img src={loginIcon} alt="Login" className="h-8 w-8 object-contain" />
+                  Sign in / Sign up
                 </button>
               )}
 
@@ -366,14 +366,14 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               <p className="text-gray-400">Address: Providence, Mauritius</p>
               <div className="mt-4 flex items-center gap-3">
                 <a
-                  href="#"
+                  href="https://www.facebook.com/people/TPS-GREEN-Enterprise/61576489792713/"
                   aria-label="Facebook"
                   className="rounded-full border border-gray-700 p-2 text-gray-400 transition hover:border-white hover:text-white"
                 >
                   <Facebook className="h-5 w-5" />
                 </a>
                 <a
-                  href="https://www.instagram.com/tpsgreen.enterprise_ltd?igsh=MWx5eHZlYXJnejE3NA%3D%3D"
+                  href="https://www.facebook.com/people/TPS-GREEN-Enterprise/61576489792713/"
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label="Instagram"
@@ -382,7 +382,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                   <Instagram className="h-5 w-5" />
                 </a>
                 <a
-                  href="#"
+                  href="https://www.tiktok.com/@tpsgreen.enterprise_ltd?_r=1&_t=ZS-94vStBk6kcK"
                   aria-label="TikTok"
                   className="rounded-full border border-gray-700 p-2 text-gray-400 transition hover:border-white hover:text-white"
                 >

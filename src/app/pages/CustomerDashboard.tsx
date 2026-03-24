@@ -1,8 +1,10 @@
 import React, { useEffect } from 'react';
+import CustomerChatBot from '../components/CustomerChatBot';
 import { useNavigate } from 'react-router';
 import { ArrowRight, Leaf, ShoppingBag, Sparkles, Truck, Sprout, Salad, Trees } from 'lucide-react';
 import { toast } from 'sonner';
 import Layout from '../components/Layout';
+import { useCart } from '../contexts/CartContext';
 import { Button } from '../components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
 
@@ -47,6 +49,7 @@ const categoryCards = [
 
 export default function CustomerDashboard() {
   const navigate = useNavigate();
+  const { getCartCount, getCartTotal } = useCart();
 
   useEffect(() => {
     const token = localStorage.getItem('customerAccessToken');
@@ -87,6 +90,29 @@ export default function CustomerDashboard() {
                   View Cart
                 </Button>
               </div>
+
+              <div className="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-3">
+                <div className="rounded-2xl border border-green-100 bg-white/80 p-4 text-center shadow-sm">
+                  <p className="text-xs font-semibold uppercase tracking-widest text-green-500">
+                    Cart Items
+                  </p>
+                  <p className="mt-2 text-2xl font-black text-green-900">{getCartCount()}</p>
+                </div>
+                <div className="rounded-2xl border border-green-100 bg-white/80 p-4 text-center shadow-sm">
+                  <p className="text-xs font-semibold uppercase tracking-widest text-green-500">
+                    Cart Total
+                  </p>
+                  <p className="mt-2 text-2xl font-black text-green-900">Rs{getCartTotal().toFixed(2)}</p>
+                </div>
+                <div className="rounded-2xl border border-green-100 bg-white/80 p-4 text-center shadow-sm">
+                  <p className="text-xs font-semibold uppercase tracking-widest text-green-500">
+                    Account
+                  </p>
+                  <Button size="sm" className="mt-2 rounded-full bg-green-600 text-white hover:bg-green-700" onClick={() => navigate('/customer/account')}>
+                    Manage
+                  </Button>
+                </div>
+              </div>
             </div>
 
             <Card className="border-green-100 bg-white/90 shadow-2xl">
@@ -120,6 +146,7 @@ export default function CustomerDashboard() {
           </div>
         </div>
       </section>
+      <CustomerChatBot />
 
       <section className="bg-white">
         <div className="container mx-auto px-4 py-12 md:py-16">
