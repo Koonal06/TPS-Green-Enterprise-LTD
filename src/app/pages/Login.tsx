@@ -27,6 +27,12 @@ export default function Login() {
 
       if (error) throw error;
 
+      if (data.user?.user_metadata?.role === 'admin') {
+        await supabase.auth.signOut();
+        localStorage.removeItem('customerAccessToken');
+        throw new Error('Please use the dedicated admin portal for admin accounts');
+      }
+
       if (data.session?.access_token) {
         localStorage.setItem('customerAccessToken', data.session.access_token);
         window.dispatchEvent(new Event('customer-auth-changed'));

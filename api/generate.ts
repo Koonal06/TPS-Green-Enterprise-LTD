@@ -4,6 +4,8 @@ type GenerateRequestBody = {
   stream?: boolean;
 };
 
+const MAX_PROMPT_LENGTH = 4000;
+
 export default async function handler(req: any, res: any) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
@@ -19,9 +21,23 @@ export default async function handler(req: any, res: any) {
   }
 
   const { model, prompt, stream }: GenerateRequestBody = req.body || {};
+  const allowedModels = new Set(
+    String(process.env.ALLOWED_OLLAMA_MODELS || 'llama3.2:1b')
+      .split(',')
+      .map((value) => value.trim())
+      .filter(Boolean)
+  );
 
   if (!prompt || !model) {
     return res.status(400).json({ error: 'Missing required fields: model and prompt' });
+  }
+
+  if (!allowedModels.has(model)) {
+    return res.status(400).json({ error: 'Requested model is not allowed' });
+  }
+
+  if (prompt.length > MAX_PROMPT_LENGTH) {
+    return res.status(413).json({ error: 'Prompt is too large' });
   }
 
   try {
@@ -42,7 +58,6 @@ export default async function handler(req: any, res: any) {
     if (!upstreamResponse.ok) {
       return res.status(upstreamResponse.status).json({
         error: 'Upstream Ollama request failed',
-        details: rawText,
       });
     }
 
@@ -52,7 +67,6 @@ export default async function handler(req: any, res: any) {
     } catch {
       return res.status(502).json({
         error: 'Invalid JSON received from Ollama',
-        details: rawText,
       });
     }
   } catch (error) {

@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router';
 import { Loader2, Mail, Settings, Upload, UserRound } from 'lucide-react';
 import { toast } from 'sonner';
 import Layout from '../components/Layout';
-import { CUSTOMER_AVATAR_BUCKET, resolveStorageUrl, supabase } from '../lib/supabase';
+import { API_URL, resolveStorageUrl, supabase } from '../lib/supabase';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
@@ -44,7 +44,8 @@ export default function CustomerAccount() {
       const { data } = await supabase.auth.getUser();
       const user = data.user;
 
-      if (!user) {
+      if (!user || user.user_metadata?.role === 'admin') {
+        localStorage.removeItem('customerAccessToken');
         toast.error('Unable to load your account');
         navigate('/login');
         return;
@@ -75,9 +76,21 @@ export default function CustomerAccount() {
   const handleProfilePhotoChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
 
-    if (!file) {
-      return;
-    }
+      if (!file) {
+        return;
+      }
+
+      if (!file.type.startsWith('image/')) {
+        toast.error('Please upload an image file');
+        e.target.value = '';
+        return;
+      }
+
+      if (file.size > 5 * 1024 * 1024) {
+        toast.error('Profile picture must be 5 MB or smaller');
+        e.target.value = '';
+        return;
+      }
 
     const {
       data: { session },
@@ -96,35 +109,27 @@ export default function CustomerAccount() {
         throw new Error('Unable to find customer profile');
       }
 
-      const fileExt = file.name.split('.').pop()?.toLowerCase() || 'jpg';
-      const filePath = `avatars/${profile.id}-${Date.now()}.${fileExt}`;
+      const formData = new FormData();
+      formData.append('file', file);
 
-      const { error: uploadError } = await supabase.storage
-        .from(CUSTOMER_AVATAR_BUCKET)
-        .upload(filePath, file, {
-          cacheControl: '3600',
-          upsert: true,
-        });
+      const response = await fetch(`${API_URL}/profile/avatar`, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        body: formData,
+      });
 
-      if (uploadError) {
-        throw uploadError;
-      }
+      const result = await response.json();
 
-      const uploadedUrl = await resolveStorageUrl(filePath);
-
-      const { error } = await supabase
-        .from('profiles')
-        .update({ avatar_url: filePath })
-        .eq('id', profile.id);
-
-      if (error) {
-        throw error;
+      if (!response.ok) {
+        throw new Error(result.error || 'Failed to upload profile picture');
       }
 
       setProfile((current) => ({
         ...current,
-        avatarPath: filePath,
-        avatarUrl: uploadedUrl,
+        avatarPath: result.avatar_url,
+        avatarUrl: result.signed_url || current.avatarUrl,
       }));
       window.dispatchEvent(new Event('customer-auth-changed'));
       toast.success('Profile picture updated');

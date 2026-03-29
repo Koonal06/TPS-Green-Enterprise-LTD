@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
 import Layout from '../components/Layout';
 import { Button } from '../components/ui/button';
@@ -8,7 +8,7 @@ import { Label } from '../components/ui/label';
 import { Textarea } from '../components/ui/textarea';
 import { useCart } from '../contexts/CartContext';
 import { formatPrice } from '../lib/currency';
-import { apiRequest } from '../lib/supabase';
+import { apiRequest, supabase } from '../lib/supabase';
 import { toast } from 'sonner';
 import { Loader2 } from 'lucide-react';
 import { hasCustomerSession } from '../lib/supabase';
@@ -23,6 +23,25 @@ export default function Checkout() {
     email: '',
     address: '',
   });
+
+  useEffect(() => {
+    async function loadCustomer() {
+      const { data } = await supabase.auth.getUser();
+      const user = data.user;
+
+      if (!user || user.user_metadata?.role === 'admin') {
+        return;
+      }
+
+      setFormData((current) => ({
+        ...current,
+        name: current.name || user.user_metadata?.full_name || '',
+        email: user.email || current.email,
+      }));
+    }
+
+    void loadCustomer();
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -56,7 +75,7 @@ export default function Checkout() {
       await apiRequest('/orders', {
         method: 'POST',
         body: JSON.stringify(orderData),
-      });
+      }, true);
 
       toast.success('Order placed successfully!');
       clearCart();
@@ -138,6 +157,7 @@ export default function Checkout() {
                       value={formData.email}
                       onChange={handleChange}
                       required
+                      readOnly={Boolean(formData.email)}
                     />
                   </div>
 

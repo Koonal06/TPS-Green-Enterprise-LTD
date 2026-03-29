@@ -7,6 +7,7 @@ import Layout from '../components/Layout';
 import { useCart } from '../contexts/CartContext';
 import { Button } from '../components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
+import { supabase } from '../lib/supabase';
 
 const categoryCards = [
   {
@@ -52,12 +53,27 @@ export default function CustomerDashboard() {
   const { getCartCount, getCartTotal } = useCart();
 
   useEffect(() => {
-    const token = localStorage.getItem('customerAccessToken');
+    async function validateCustomer() {
+      const token = localStorage.getItem('customerAccessToken');
 
-    if (!token) {
-      toast.error('Please login to access your customer portal');
-      navigate('/login');
+      if (!token) {
+        toast.error('Please login to access your customer portal');
+        navigate('/login');
+        return;
+      }
+
+      const {
+        data: { user },
+      } = await supabase.auth.getUser(token);
+
+      if (!user || user.user_metadata?.role === 'admin') {
+        localStorage.removeItem('customerAccessToken');
+        toast.error('Please login with a customer account');
+        navigate('/login');
+      }
     }
+
+    void validateCustomer();
   }, [navigate]);
 
   return (

@@ -32,6 +32,20 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     if (!token) {
       toast.error('Please login to access admin panel');
       navigate('/admin/login');
+      return;
+    }
+
+    const {
+      data: { user },
+      error,
+    } = await supabase.auth.getUser(token);
+
+    if (error || !user || user.user_metadata?.role !== 'admin') {
+      await supabase.auth.signOut();
+      localStorage.removeItem('accessToken');
+      localStorage.removeItem('refreshToken');
+      toast.error('Admin access is required');
+      navigate('/admin/login');
     }
   }
 
