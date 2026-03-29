@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router';
+import { useNavigate } from 'react-router';
 import { Leaf, Loader2, UserRound } from 'lucide-react';
 import { toast } from 'sonner';
 import { supabase } from '../lib/supabase';
@@ -169,13 +169,6 @@ export default function Login() {
                         Back to Store
                       </Button>
 
-                      <p className="text-center text-sm text-gray-500">
-                        Admin team?
-                        {' '}
-                        <Link to="/admin/login" className="font-semibold text-green-700 hover:text-green-800">
-                          Go to admin login
-                        </Link>
-                      </p>
                     </form>
                   </CardContent>
                 </Card>
